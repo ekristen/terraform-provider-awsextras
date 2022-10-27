@@ -29,7 +29,7 @@ func resourceRemoveKeyPairs() *schema.Resource {
 				Description: "exclude key pair by regex on key pair name",
 				Optional:    true,
 			},
-			"exclude_key_pair_names": &schema.Schema{
+			"exclude_names": &schema.Schema{
 				Type:        schema.TypeSet,
 				Elem:        &schema.Schema{Type: schema.TypeString},
 				Description: "exclude any of these key pair names",
@@ -67,7 +67,7 @@ func resourceRemoveKeyPairsRead(ctx context.Context, d *schema.ResourceData, m i
 		excludeRegex[i] = regex.(string)
 	}
 
-	excludeNamesSet := d.Get("exclude_key_pair_names").(*schema.Set)
+	excludeNamesSet := d.Get("exclude_names").(*schema.Set)
 	excludeNames := make([]string, excludeNamesSet.Len())
 	for i, id := range excludeNamesSet.List() {
 		excludeNames[i] = id.(string)
