@@ -3,6 +3,9 @@ package extras
 import (
 	"context"
 	"fmt"
+	"log"
+	"time"
+
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
@@ -12,8 +15,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"golang.org/x/exp/slices"
-	"log"
-	"time"
 )
 
 const (
@@ -31,7 +32,7 @@ func resourceTerminateEc2Instances() *schema.Resource {
 			},
 			"include_untagged": &schema.Schema{
 				Type:        schema.TypeBool,
-				Description: "considered untagged as Terminated",
+				Description: "considered resources without tags to be unmanaged an should be terminated",
 				Default:     true,
 				Optional:    true,
 			},
@@ -85,6 +86,8 @@ func resourceTerminateEc2InstancesRead(ctx context.Context, d *schema.ResourceDa
 		excludeTags[i] = tag.(string)
 	}
 
+	includeUntagged := d.Get("include_untagged").(bool)
+
 	input := &ec2.DescribeInstancesInput{
 		Filters: []types.Filter{
 			{
@@ -106,20 +109,21 @@ func resourceTerminateEc2InstancesRead(ctx context.Context, d *schema.ResourceDa
 			tid := aws.ToString(instance.InstanceId)
 			log.Printf("[DEBUG] found instance: %s", tid)
 			if slices.Contains(excludeInstanceIds, tid) {
-				log.Printf("[DEBUG] skipping instance: %s, reason: excluded", tid)
+				log.Printf("[DEBUG] skipping instance: %s, reason: excluded by id", tid)
 				continue
 			}
 
-			if len(instance.Tags) != 1 {
-				log.Printf("[DEBUG] skipping instance: %s, reason: more than 1 tag", tid)
-				continue
-			} else {
-				for _, t := range instance.Tags {
-					key := aws.ToString(t.Key)
-					if slices.Contains(excludeTags, key) {
-						continue
-					}
+			for _, t := range instance.Tags {
+				key := aws.ToString(t.Key)
+				if slices.Contains(excludeTags, key) {
+					log.Printf("[DEBUG] skipping instance: %s, reason: excluded by tag", tid)
+					continue
 				}
+			}
+
+			if !includeUntagged && len(instance.Tags) != 0 {
+				log.Printf("[DEBUG] skipping instance: %s, reason: excluded by include_untagged is false, more than 1 tags present", tid)
+				continue
 			}
 
 			instanceIds = append(instanceIds, tid)
