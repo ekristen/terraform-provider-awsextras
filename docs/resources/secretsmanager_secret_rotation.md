@@ -11,6 +11,8 @@ description: |-
 The secretsmanager_secret_rotation allows you to change the rotation rules for a secret that is already in secret manager.
 This is useful for when AWS manages the secret for you but does not provide all the knobs to control the rotation schedule.
 
+Deletion **DOES NOT** delete the resource!
+
 ## Example Usage
 
 ```terraform
