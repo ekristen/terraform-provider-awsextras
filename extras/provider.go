@@ -18,8 +18,9 @@ func Provider() *schema.Provider {
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"awsextras_terminate_instances": resourceTerminateEc2Instances(),
-			"awsextras_remove_key_pairs":    resourceRemoveKeyPairs(),
+			"awsextras_terminate_instances":            resourceTerminateEc2Instances(),
+			"awsextras_remove_key_pairs":               resourceRemoveKeyPairs(),
+			"awsextras_secretsmanager_secret_rotation": resourceSecretsManagerSecretRotation(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}

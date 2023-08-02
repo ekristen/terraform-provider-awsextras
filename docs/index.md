@@ -2,7 +2,7 @@
 page_title: "Provider: AWS Extras"
 subcategory: ""
 description: |-
-Terraform provider for interacting with AWS in ways the default official provider does not.
+    Terraform provider for interacting with AWS in ways the default official provider does not.
 ---
 
 # AWS Extras Provider

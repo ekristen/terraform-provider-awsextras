@@ -2,9 +2,9 @@
 page_title: "terminate_instances Resource - terraform-provider-awsextras"
 subcategory: ""
 description: |-
-The terminate_instances resource allows you to terminate instances not controlled by terraform, this is useful if you
-are building infrastructure where something else can build instances in your subnets and you want to be able to simply
-be able to run a destroy.
+    The terminate_instances resource allows you to terminate instances not controlled by terraform, this is useful if you
+    are building infrastructure where something else can build instances in your subnets and you want to be able to simply
+    be able to run a destroy.
 ---
 
 # Resource `awsextras_terminate_instances`
